@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemas y Hábitos - Leandro Aisa</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background-color: #1e1e1e;
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+        h1 {
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 2em;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        .habit-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .habit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #d4af37;
+            transition: background-color 0.3s;
+        }
+        .habit-item.completed {
+            background-color: #3a3a3a;
+            opacity: 0.7;
+        }
+        .habit-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.5);
+            accent-color: #d4af37;
+        }
+        .habit-text {
+            font-size: 1em;
+            color: #ffffff; /* Prohibido usar letra oscura */
+        }
+        .completed .habit-text {
+            text-decoration: line-through;
+            color: #cccccc;
+        }
+        .btn-whatsapp {
+            background-color: #d4af37;
+            color: #ffffff; /* Letra blanca visible */
+            text-shadow: 1px 1px 2px #000000; /* Sombra para resaltar sobre el dorado */
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn-whatsapp:hover {
+            background-color: #b5952f;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #d4af37;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Leandro Aisa</h1>
+        <p class="subtitle">@leandroatrainer</p>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <ul class="habit-list">
+            <li class="habit-item">
+                <input type="checkbox" id="habit1" onchange="updateProgress()">
+                <label class="habit-text" for="habit1">Kit preparado (mochila con peso y tobilleras listas)</label>
+            </li>
+            <li class="habit-item">
+                <input type="checkbox" id="habit2" onchange="updateProgress()">
+                <label class="habit-text" for="habit2">Foco operativo (celular lejos, pausas respetadas)</label>
+            </li>
+            <li class="habit-item">
+                <input type="checkbox" id="habit3" onchange="updateProgress()">
+                <label class="habit-text" for="habit3">Regla de 2 min (activación y zona media)</label>
+            </li>
+            <li class="habit-item">
+                <input type="checkbox" id="habit4" onchange="updateProgress()">
+                <label class="habit-text" for="habit4">Entrenamiento del día completado</label>
+            </li>
+            <li class="habit-item">
+                <input type="checkbox" id="habit5" onchange="updateProgress()">
+                <label class="habit-text" for="habit5">Voto de identidad (registro en planilla listo)</label>
+            </li>
+        </ul>
+
+        <button class="btn-whatsapp" onclick="sendWhatsApp()">Enviar reporte por WhatsApp</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 5; i++) {
+                const checkbox = document.getElementById(`habit${i}`);
+                const isChecked = localStorage.getItem(`habit${i}`) === 'true';
+                checkbox.checked = isChecked;
+                if (isChecked) {
+                    checkbox.parentElement.classList.add('completed');
+                }
+            }
+            updateProgress(false);
+        });
+
+        function updateProgress(save = true) {
+            let completed = 0;
+            for (let i = 1; i <= 5; i++) {
+                const checkbox = document.getElementById(`habit${i}`);
+                if (checkbox.checked) {
+                    completed++;
+                    checkbox.parentElement.classList.add('completed');
+                } else {
+                    checkbox.parentElement.classList.remove('completed');
+                }
+                if (save) {
+                    localStorage.setItem(`habit${i}`, checkbox.checked);
+                }
+            }
+            const percentage = (completed / 5) * 100;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        function sendWhatsApp() {
+            let completed = 0;
+            for (let i = 1; i <= 5; i++) {
+                if (document.getElementById(`habit${i}`).checked) completed++;
+            }
+            const text = `¡Hola! Terminé mi sesión de hoy en casa. Completé ${completed}/5 de los sistemas del protocolo. 💪`;
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
